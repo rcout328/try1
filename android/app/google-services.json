@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "474369294841",
+    "project_id": "linkedin-clone-d873d",
+    "storage_bucket": "linkedin-clone-d873d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474369294841:android:61a15c37669667db77fd28",
+        "android_client_info": {
+          "package_name": "com.try1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474369294841-5u5oem81vos287p9t29n78hbjjv4jct1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7hnSN4RbQb0B0gOEaPjr-LaLGV8zjdhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474369294841-5u5oem81vos287p9t29n78hbjjv4jct1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "474369294841-1o6ppriqq4tml5ivaqiharp99ovd37qd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.scamsafe11"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

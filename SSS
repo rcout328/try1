@@ -1,0 +1,63 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, PermissionsAndroid, DeviceEventEmitter, Button, NativeModules } from 'react-native';
+
+const { SmsListenerModule } = NativeModules; // Import the native module
+
+const App = () => {
+  const [message, setMessage] = useState('');
+
+  const requestSmsPermission = async () => {
+    try {
+      const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS);
+
+      if (permission === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('SMS permission granted');d
+      } else {
+        console.log('SMS permission denied');
+      }I
+    } catch (err) {
+      console.log('Error requesting SMS permission:', err);
+
+
+      
+    }
+  };
+
+  const checkSmsListener = () => {
+    console.log('Checking SMS Listener Module...');
+    if (SmsListenerModule) {
+      console.log('SmsListenerModule is available');
+      SmsListenerModule.startListeningToSMS();
+      console.log('SmsListenerModule:', SmsListenerModule);
+      console.log('SmsListenerModule.startListeningToSMS:', SmsListenerModule.startListeningToSMS);
+      console.log('Called startListeningToSMS method');
+    } else {
+      console.log('SmsListenerModule is not available');
+    }
+  };
+
+  useEffect(() => {
+    requestSmsPermission();
+
+    const subscriber = DeviceEventEmitter.addListener('onSMSReceived', (message) => {
+      console.log('SMS received:', message);
+      const { messageBody, senderPhoneNumber } = JSON.parse(message);
+      setMessage(messageBody);
+      console.log(`Message from ${senderPhoneNumber}: ${messageBody}`);
+    });
+
+    return () => {
+      subscriber.remove();
+    };
+  }, []);
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>SMS Data:</Text>
+      <Text>{message}</Text>
+      <Button title="Start Listening for SMS" onPress={checkSmsListener} />
+    </View>
+  );
+};
+
+export default App; 
