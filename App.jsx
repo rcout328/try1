@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, PermissionsAndroid, DeviceEventEmitter, Button, NativeModules, Platform } from 'react-native';
+import { View, Text, PermissionsAndroid, DeviceEventEmitter, Button, NativeModules } from 'react-native';
 import BackgroundService from 'react-native-background-actions';
 
 const { SmsListenerModule } = NativeModules; // Import the native module
@@ -10,7 +10,6 @@ const App = () => {
   const requestSmsPermission = async () => {
     try {
       const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS);
-
       if (permission === PermissionsAndroid.RESULTS.GRANTED) {
         console.log('SMS permission granted');
       } else {
@@ -21,103 +20,63 @@ const App = () => {
     }
   };
 
-  const veryIntensiveTask = async () => {
-    console.log('Background task is running...');
-    await new Promise(async resolve => {
-      while (BackgroundService.isRunning()) {
-        console.log('Checking for SMS...');
-        checkSmsListener(); // Call the SMS listener function
-        await sleep(10000); // Check every 10 seconds
-      }
-      resolve();
-    });
-  };
-
-  const startTask = async () => {
-    console.log('Starting background task...');
-    const options = {
-      taskName: 'SMS Listener',
-      taskTitle: 'Listening for SMS',
-      taskDesc: 'Listening for incoming SMS messages in the background',
-      parameters: {},
-      isHeadless: true,
-    };
-    await BackgroundService.start(veryIntensiveTask, options);
-    checkSmsListener(); // Call checkSmsListener when starting the task
-  };
-
-  const stopTask = async () => {
-    await BackgroundService.stop();
-    console.log('Background task stopped.');
-  };
-
   const checkSmsListener = () => {
     console.log('Checking SMS Listener Module...');
     if (SmsListenerModule) {
       console.log('SmsListenerModule is available');
       SmsListenerModule.startListeningToSMS();
       console.log('Called startListeningToSMS method');
-
-      // Log the latest SMS received
-      SmsListenerModule.onSMSReceived((message) => {
-        console.log('Latest SMS received:', message); // Log the received message
-        try {
-            const parsedMessage = JSON.parse(message);
-            const { messageBody, senderPhoneNumber } = parsedMessage;
-            console.log(`Message from ${senderPhoneNumber}: ${messageBody}`); // Log sender and message body
-            setMessage(messageBody); // Update state with the message body
-        } catch (error) {
-            console.error('Error parsing message:', error);
-            console.log('Raw message data:', message); // Log raw message data for debugging
-        }
-    });
     } else {
       console.log('SmsListenerModule is not available');
     }
   };
 
+  const startBackgroundService = async () => {
+    const task = async (taskData) => {
+      // This will run in the background
+      DeviceEventEmitter.addListener('onSMSReceived', (message) => {
+        console.log('SMS received:', message);
+        const { messageBody, senderPhoneNumber } = JSON.parse(message);
+        setMessage(messageBody);
+        console.log(`Message from ${senderPhoneNumber}: ${messageBody}`);
+      });
+    };
+
+    const options = {
+      taskName: 'SMS Listener',
+      taskTitle: 'Listening for SMS',
+      taskDesc: 'This app is running in the background to listen for SMS messages.',
+      taskIcon: {
+        name: 'ic_launcher', // Your app icon
+        type: 'mipmap',
+      },
+      color: '#ff0000',
+      linkingURI: 'yourapp://chat', // Optional
+      parameters: {
+        delay: 1000, // Optional
+      },
+    };
+
+    await BackgroundService.start(task, options);
+  };
+
   useEffect(() => {
     requestSmsPermission();
-
-    const subscriber = DeviceEventEmitter.addListener('onSMSReceived', (message) => {
-      console.log('SMS received:', message);
-      const { messageBody, senderPhoneNumber } = JSON.parse(message);
-      setMessage(messageBody);
-      console.log(`Message from ${senderPhoneNumber}: ${messageBody}`);
-    });
+    startBackgroundService();
 
     return () => {
-      subscriber.remove();
+      DeviceEventEmitter.removeAllListeners('onSMSReceived'); // Clean up listener
+      BackgroundService.stop();
     };
   }, []);
-
-  useEffect(() => {
-    // Start the background task
-    startTask();
-
-    return () => {
-      stopTask();
-    };
-  }, []);
-
-  
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>SMS Data:</Text>
       <Text>{message}</Text>
-      <Button title="Start Listening for SMS" onPress={startTask} />
-      <Button title="Stop Listening for SMS" onPress={stopTask} />
+      <Button title="Start Listening for SMS" onPress={checkSmsListener} />
     </View>
   );
 };
 
-const sleep = (time) => new Promise(resolve => setTimeout(resolve, time));
-
-// Example function to determine if a message is a scam
-const isScamMessage = (message) => {
-  // Implement your scam detection logic here
-  return message.includes("scam"); // Example condition
-};
-
-export default App;
+export default App; 
