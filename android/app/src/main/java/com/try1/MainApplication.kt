@@ -20,9 +20,9 @@ class MainApplication : Application(), ReactApplication {
 
     override fun getJSMainModuleName(): String = "index"
 
-    override fun isNewArchEnabled(): Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-
-    override fun isHermesEnabled(): Boolean = BuildConfig.IS_HERMES_ENABLED
+    // Remove these two methods as they're not part of the interface
+    // override fun isNewArchEnabled(): Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+    // override fun isHermesEnabled(): Boolean = BuildConfig.IS_HERMES_ENABLED
   }
 
   override val reactNativeHost: ReactNativeHost
@@ -32,9 +32,7 @@ class MainApplication : Application(), ReactApplication {
     super.onCreate()
     SoLoader.init(this, false)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    // Remove the ReactNativeFlipper initialization for now
   }
 }

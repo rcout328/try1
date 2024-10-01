@@ -9,8 +9,9 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         // Handle the boot completed event
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
-            Log.d("BootReceiver", "Boot completed, starting service...")
-            // Start your service or perform necessary actions here
+            Log.d("BootReceiver", "Boot completed detected!")
+            // You can add more logging or perform minimal actions here
+            // Do NOT start activities or heavy operations here
         }
     }
 }
