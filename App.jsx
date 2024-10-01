@@ -103,6 +103,7 @@ const App = () => {
 
   useEffect(() => {
     requestSmsPermission();
+    startBackgroundService(); // Start the background service immediately
 
     const foregroundListener = DeviceEventEmitter.addListener('onSMSReceived', async (message) => {
       console.log('SMS received in foreground:', message);

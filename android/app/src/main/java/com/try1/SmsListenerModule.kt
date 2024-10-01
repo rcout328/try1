@@ -75,6 +75,11 @@ class SmsListenerModule(private val reactContext: ReactApplicationContext) : Rea
     @ReactMethod
     fun startListeningToSMS() {
         Log.d("SmsListenerModule", "startListeningToSMS called")
-        registerSMSReceiver()
+        try {
+            registerSMSReceiver()
+            Log.d("SmsListenerModule", "SMS receiver registered successfully")
+        } catch (e: Exception) {
+            Log.e("SmsListenerModule", "Error registering SMS receiver", e)
+        }
     }
 }
