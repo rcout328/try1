@@ -1,4 +1,4 @@
-package com.try1
+package com.try1 // Ensure this matches your package declaration
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,11 +7,10 @@ import android.util.Log
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            Log.d("BootReceiver", "Boot completed intent received")
-            val serviceIntent = Intent(context, YourBackgroundService::class.java)
-            context.startService(serviceIntent)
-            Log.d("BootReceiver", "YourBackgroundService start intent sent")
+        // Handle the boot completed event
+        if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
+            Log.d("BootReceiver", "Boot completed, starting service...")
+            // Start your service or perform necessary actions here
         }
     }
 }

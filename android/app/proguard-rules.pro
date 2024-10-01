@@ -8,3 +8,10 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+     # ProGuard rules for your Android application
+
+     # Keep the BootReceiver class
+     -keep class com.try1.BootReceiver { *; }
+
+     # Other ProGuard rules can go here
