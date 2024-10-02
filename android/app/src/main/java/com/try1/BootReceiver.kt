@@ -9,10 +9,8 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
             Log.d("BootReceiver", "Boot completed detected!")
-            // Start MainActivity directly
-            val activityIntent = Intent(context, MainActivity::class.java)
-            activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(activityIntent)
+            val serviceIntent = Intent(context, AppStarterService::class.java)
+            context.startForegroundService(serviceIntent) // Use startForegroundService for Android O and above
         }
     }
 }
