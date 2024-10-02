@@ -13,5 +13,7 @@
 
      # Keep the BootReceiver class
      -keep class com.try1.BootReceiver { *; }
-
+ -keep class com.try1.AppStarterService { *; }
+   -keep class com.try1.MainActivity { *; }
+   -keep class com.try1.BootReceiver { *; }
      # Other ProGuard rules can go here

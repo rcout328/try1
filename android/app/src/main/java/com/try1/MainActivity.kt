@@ -16,7 +16,9 @@ class MainActivity : ReactActivity() {
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component.
    */
-  override fun getMainComponentName(): String = "try1" // Ensure this matches your app name
+  override fun getMainComponentName(): String? {
+      return "YourReactNativeApp" // Replace with your actual component name
+  }
 
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
@@ -35,6 +37,16 @@ class MainActivity : ReactActivity() {
           startService(serviceIntent)
           Log.d("MainActivity", "Background service start attempted")
       }
+  }
+
+  override fun onStart() {
+      super.onStart()
+      Log.d("MainActivity", "onStart called")
+  }
+
+  override fun onResume() {
+      super.onResume()
+      Log.d("MainActivity", "onResume called")
   }
 
   private fun isServiceRunning(serviceClass: Class<*>): Boolean {

@@ -3,10 +3,12 @@ import { View, Text, PermissionsAndroid, DeviceEventEmitter, Button, NativeModul
 import BackgroundService from 'react-native-background-actions';
 
 const { SmsListenerModule } = NativeModules; // Import the native module
-
 const sleep = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
 
+console.log('App.jsx is being executed');
+
 const sendSmsToServer = async (messageBody) => {
+  console.log('Attempting to send SMS to server:', messageBody);
   try {
     const response = await fetch('https://varun324242-s1.hf.space/predict', {
       method: 'POST',
@@ -16,7 +18,7 @@ const sendSmsToServer = async (messageBody) => {
       body: JSON.stringify({
         text: messageBody
       }),
-    });
+    }); 
     const data = await response.json();
     console.log('Response from server:', data);
     return data;
@@ -27,16 +29,19 @@ const sendSmsToServer = async (messageBody) => {
 
 const backgroundTask = async (taskDataArguments) => {
   const { delay } = taskDataArguments;
-  console.log('Background task started');
+  console.log('Background task started with delay:', delay);
   await new Promise( async (resolve) => {
     const smsListener = DeviceEventEmitter.addListener('onSMSReceived', async (message) => {
       console.log('SMS received in background:', message);
       const { messageBody } = JSON.parse(message);
+      console.log('Parsed message body:', messageBody);
       const serverResponse = await sendSmsToServer(messageBody);
       console.log('Server response in background:', serverResponse);
     });
 
+    console.log('Entering background task loop');
     while (BackgroundService.isRunning()) {
+      console.log('Background service is still running');
       await sleep(delay);
     }
 
@@ -47,12 +52,15 @@ const backgroundTask = async (taskDataArguments) => {
 };
 
 const App = () => {
+  console.log('App component rendering');
   const [message, setMessage] = useState('');
   const [isBackgroundServiceRunning, setIsBackgroundServiceRunning] = useState(false);
 
   const requestSmsPermission = async () => {
+    console.log('Requesting SMS permission');
     try {
       const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS);
+      console.log('SMS permission result:', permission);
       if (permission === PermissionsAndroid.RESULTS.GRANTED) {
         console.log('SMS permission granted');
       } else {
@@ -65,6 +73,7 @@ const App = () => {
 
   const checkSmsListener = () => {
     console.log('Checking SMS Listener Module...');
+    console.log('NativeModules:', JSON.stringify(NativeModules)); // Add this line for debugging
     if (SmsListenerModule) {
       console.log('SmsListenerModule is available');
       SmsListenerModule.startListeningToSMS();
@@ -75,6 +84,7 @@ const App = () => {
   };
 
   const startBackgroundService = async () => {
+    console.log('Starting background service');
     const options = {
       taskName: 'SMS Listener',
       taskTitle: 'Listening for SMS',
@@ -96,14 +106,20 @@ const App = () => {
   };
 
   const stopBackgroundService = async () => {
+    console.log('Stopping background service');
     await BackgroundService.stop();
     setIsBackgroundServiceRunning(false);
     console.log('Background service stopped');
   };
 
   useEffect(() => {
+    console.log('App useEffect running');
     requestSmsPermission();
-    startBackgroundService(); // Start the background service immediately
+
+    const bootCompletedListener = DeviceEventEmitter.addListener('BootCompleted', () => {
+      console.log('Boot completed event received');
+      startBackgroundService();
+    });
 
     const foregroundListener = DeviceEventEmitter.addListener('onSMSReceived', async (message) => {
       console.log('SMS received in foreground:', message);
@@ -115,13 +131,19 @@ const App = () => {
       console.log('Server response in foreground:', serverResponse);
     });
 
+    console.log('Listeners set up');
+
     return () => {
+      console.log('App useEffect cleanup');
+      bootCompletedListener.remove();
       foregroundListener.remove();
       if (isBackgroundServiceRunning) {
         BackgroundService.stop();
       }
     };
   }, []);
+
+  console.log('All Native Modules:', Object.keys(NativeModules));
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

@@ -23,6 +23,7 @@ class SmsListenerModule(private val reactContext: ReactApplicationContext) : Rea
     }
 
     override fun getName(): String {
+        Log.d("SmsListenerModule", "getName() called, returning: SmsListenerModule")
         return "SmsListenerModule"
     }
 

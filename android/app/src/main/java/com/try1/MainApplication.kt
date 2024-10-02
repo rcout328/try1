@@ -1,6 +1,7 @@
 package com.try1
 
 import android.app.Application
+import android.util.Log
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
@@ -16,13 +17,11 @@ class MainApplication : Application(), ReactApplication {
 
     override fun getPackages(): List<ReactPackage> = PackageList(this).packages.apply {
       // Packages that cannot be autolinked yet can be added manually here
+      add(SmsListenerPackage())
+      Log.d("MainApplication", "Added SmsListenerPackage")
     }
 
     override fun getJSMainModuleName(): String = "index"
-
-    // Remove these two methods as they're not part of the interface
-    // override fun isNewArchEnabled(): Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-    // override fun isHermesEnabled(): Boolean = BuildConfig.IS_HERMES_ENABLED
   }
 
   override val reactNativeHost: ReactNativeHost
@@ -34,5 +33,6 @@ class MainApplication : Application(), ReactApplication {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
     }
+    Log.d("MainApplication", "onCreate called")
   }
 }
